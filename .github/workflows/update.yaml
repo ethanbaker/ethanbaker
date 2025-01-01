@@ -1,0 +1,73 @@
+name: update-readme
+
+on:
+  # Run on updates to main
+  push:
+    branches:
+      - main
+
+  # Run daily at midnight
+  schedule:
+    - cron: '0 0 * * *'
+
+  # Allow option to run manually
+  workflow_dispatch:
+
+jobs:
+  update-readme:
+    name: Build and Deploy Dynamic README
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout and fetch the current repository with one previous commit
+      - name: Check out repository
+        uses: actions/checkout
+        with:
+          fetch-depth: 1
+
+      # Set up Go
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.20'
+
+      # Cache Go modules for faster builds
+      - name: Cache Go modules
+        uses: actions/cache@v3
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: ${{ runner.os }}-go-
+
+      # Build the README
+      - name: Build README
+        run: |
+          cd .update
+          go mod tidy
+          go run main.go
+
+      # Check if the newly generated README actually changed
+      - name: Check for changes
+        id: git_diff
+        run: |
+          git add --all
+          if git diff-index --quiet HEAD; then
+            echo "no_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "no_changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      # Commit and push changes if there are any
+      - name: Commit and push changes
+        if: steps.git_diff.outputs.no_changes == 'false'
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+
+          git commit -m "auto: update dynamic content (README)"
+          git push "https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:main
+
+      # Notify if no changes were detected
+      - name: Notify No Changes
+        if: steps.git_diff.outputs.no_changes == 'true'
+        run: echo "No changes detected in README, skipping commit"
