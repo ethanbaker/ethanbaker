@@ -17,13 +17,15 @@ jobs:
   update-readme:
     name: Build and Deploy Dynamic README
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       # Checkout and fetch the current repository with one previous commit
       - name: Check out repository
-        uses: actions/checkout
+        uses: actions/checkout@v3
         with:
-          fetch-depth: 1
+          fetch-depth: 0
 
       # Set up Go
       - name: Set up Go
@@ -42,7 +44,7 @@ jobs:
       # Build the README
       - name: Build README
         run: |
-          cd .update
+          cd ${GITHUB_WORKSPACE}/.update
           go mod tidy
           go run main.go
 
@@ -61,11 +63,11 @@ jobs:
       - name: Commit and push changes
         if: steps.git_diff.outputs.no_changes == 'false'
         run: |
-          git config user.name "${{ github.actor }}"
-          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          git config user.name "${{ GITHUB.ACTOR }}"
+          git config user.email "${{ GITHUB.ACTOR }}@users.noreply.github.com"
 
           git commit -m "auto: update dynamic content (README)"
-          git push "https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:main
+          git push -f "https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ GITHUB.REPOSITORY }}.git" HEAD:main
 
       # Notify if no changes were detected
       - name: Notify No Changes

@@ -67,7 +67,7 @@ func getPinnedRepos() []Repository {
 	// Load the HTML document
 	doc, err := goquery.NewDocumentFromReader(res.Body)
 	if err != nil {
-		log.Fatalf("error loading html document (err = %v)\n", err)
+		log.Fatalf("error loading html document (%v)\n", err)
 	}
 
 	var output []Repository
@@ -99,24 +99,24 @@ func main() {
 	last := time.Now().Format("Mon Jan 2 15:04 2006")
 
 	// Update template file
-	tmpl, err := template.New(templatePath).ParseFiles(templatePath)
+	tmpl, err := template.ParseFiles(templatePath)
 	if err != nil {
-		log.Fatalf("could not parse template file (err = %v)\n", err)
+		log.Fatalf("could not parse template file (%v)\n", err)
 	}
 
 	// Create a new file for the README
 	file, err := os.Create(readmePath)
 	if err != nil {
-		log.Fatalf("failed to create readme file (err = %v)\n", err)
+		log.Fatalf("failed to create readme file (%v)\n", err)
 	}
 
 	// Execute the template
-	err = tmpl.Execute(file, Data{
+	err = tmpl.ExecuteTemplate(file, "readme", Data{
 		Age:       age,
 		Repos:     repos,
 		UpdatedAt: last,
 	})
 	if err != nil {
-		log.Fatalf("could not execute template (err = %v)\n", err)
+		log.Fatalf("could not execute template (%v)\n", err)
 	}
 }
