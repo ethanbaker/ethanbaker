@@ -96,7 +96,6 @@ func main() {
 	// Get the different components of the README and format it
 	age := calculateAge()
 	repos := getPinnedRepos()
-	last := time.Now().Format("Mon Jan 2 15:04 2006")
 
 	// Update template file
 	tmpl, err := template.ParseFiles(templatePath)
@@ -112,9 +111,8 @@ func main() {
 
 	// Execute the template
 	err = tmpl.ExecuteTemplate(file, "readme", Data{
-		Age:       age,
-		Repos:     repos,
-		UpdatedAt: last,
+		Age:   age,
+		Repos: repos,
 	})
 	if err != nil {
 		log.Fatalf("could not execute template (%v)\n", err)
