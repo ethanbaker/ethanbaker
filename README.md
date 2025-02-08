@@ -3,7 +3,7 @@ Hello! I'm Ethan.
 
 ## About Me
 
-I am a 21 year old driven developer attending North Carolina State University who's
+I am a 22 year old driven developer attending North Carolina State University who's
 looking to master the many fields of computer science. My goal is to find innovative
 solutions to compelling problems across various disciplines. In addition to my
 knowledge of diverse coding modalities, I consistently work to improve my knowledge
