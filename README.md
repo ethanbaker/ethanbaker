@@ -26,8 +26,8 @@ My favorite projects I have crafted:
         An exploration of how artificial intelligence plays a role in modern games
       
 
-* [notion](https://github.com/ethanbaker/notion) - 
-        All of my notion embeds/integrations
+* [api](https://github.com/ethanbaker/api) - 
+        A modular implementation of a golang API with Gin
       
 
 
